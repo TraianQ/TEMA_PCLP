@@ -5,73 +5,70 @@ typedef struct{
     char *field;
     char *value;
 } pair;
-void resize_char_array(char *a,int *calculated_len,int new_len)
+
+void FindFirstOccurence(char *start,pair *pairs,int n,char **minPos,int *word_index)
 {
-    if(*calculated_len>=new_len)
+    *word_index=-1;
+    int found = 0;
+    for(int i=0;i<n;i++)
     {
-        *calculated_len*=2;
-        a = realloc(a,*calculated_len);
-    }
+        char *occurence = strstr(start,pairs[i].field);
+        if(occurence==NULL)
+            continue;
+        // printf("%s %d\n",pairs[i].field,occurence-start);
+        if(occurence<*minPos || found==0)
+        {
+            *minPos=occurence;
+            *word_index=i;
+            found = 1;
+        }
+    } 
 }
 int main()
 {
     int n;
-    char *field,*value,*input,*output;
-    
-    field = malloc(100*sizeof(char));
-    value = malloc(100*sizeof(char));
-    input = malloc(11000*sizeof(char));
-
     scanf("%d",&n);
-    pair *Perechi_Cuvinte = malloc(n*sizeof(pair));
+    char field[100], value[100], *output, input[11000];
+
+    pair *PAIRS = malloc(n*sizeof(pair));
+    if(PAIRS==NULL)
+    {
+        printf("RIP");
+        return 1;
+    }
 
     for(int i=0;i<n;i++)
     {
-        scanf("%s%s",field,value);
-        Perechi_Cuvinte[i].field = strdup(field);
-        Perechi_Cuvinte[i].value = strdup(value);
+        scanf("%s %s",field,value);
+        PAIRS[i].field = strdup(field);
+        PAIRS[i].value = strdup(value);
     }
-
+    
     getchar();
     fgets(input,11000,stdin);
-    output = malloc(2*strlen(input)*sizeof(char));
-
+    
     char *start = input;
+    char ans[10000];
     while(start!=NULL)
     {
-        int found = 0,chosen_word=0;
-
-        char *minPointer = start+1000000;
-
-        for(int i=0;i<n;i++)
+        char *minPOS = NULL;
+        int word_index = -1;
+        FindFirstOccurence(start,PAIRS,n,&minPOS,&word_index);
+        if(minPOS)
         {
-            char *pos = strstr(start,Perechi_Cuvinte[i].field);
-            if(pos==NULL)
-                continue;
-            if(pos<minPointer)
-            {
-                chosen_word = i;
-                minPointer = pos;
-                found = 1;
-            }
-        }
-        if(found)
-        {
-            strncat(output,start,minPointer-start);
-            strcat(output,Perechi_Cuvinte[chosen_word].value);
-            start = minPointer+strlen(Perechi_Cuvinte[chosen_word].field);
+            printf("%s - %s - %d\n",PAIRS[word_index].field,PAIRS[word_index].value,minPOS-start);
+            strncat(ans,start,minPOS-start);
+            strcat(ans,PAIRS[word_index].value);
+            start = minPOS+strlen(PAIRS[word_index].field);
         }
         else
         {
-            strncat(output,start,minPointer-start);
+            strcat(ans,start);
             break;
         }
     }
-    printf("%s",output);
-    free(field);
-    free(value);
-    free(input);
-    free(Perechi_Cuvinte);
+    printf("%s",ans);
     free(output);
+    free(PAIRS);
     return 0;
 }
