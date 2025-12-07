@@ -73,9 +73,26 @@ char* codificare2(char *password)
     }
     return rez;
 }
+char swap_letter_case(char ch)
+{
+    if(ch>='a' && ch<='z')
+        return ch-32;
+    else if(ch>='A' && ch<='Z')
+        return ch+32;
+    return ch;
+}
+char* codificare3(char *password)
+{
+
+    char *rez = calloc(2*strlen(password),sizeof(char));
+    int i;
+    for(i=0;password[i]!='\0';i++)
+        rez[i]=swap_letter_case(password[i]);
+    return rez;
+}
 int main()
 {
-    char *a = "c";
-    printf("%s\n",codificare2(a));
+    char *a = "Pula Mea";
+    printf("%s\n",codificare3(a));
     return 0;
 }
