@@ -45,10 +45,37 @@ char* codificare1(char *password)
     res[strlen(res)]='\0';
     return res;
 }
+int nr_biti_setati(int nr)
+{
+    int cnt=0;
+    while(nr)
+    {
+        cnt+=nr%2;
+        nr/=2;
+    }
+    return cnt;
+}
+char* codificare2(char *password)
+{
+    char *rez = calloc(2*strlen(password),sizeof(char));
+    int i;
+    for(i=0;password[i]!='\0';i++)
+    {
+        char ch = password[i];
+        ch^=(1<<3);
+        ch^=(1<<6);
+
+        int nr_biti = nr_biti_setati(ch);
+        ch|=32; 
+        ch-=ch%2;
+        rez[i*2]=ch;
+        rez[i*2+1]=(nr_biti+'0');
+    }
+    return rez;
+}
 int main()
 {
-    char *a = "nnan";
-    printf("%s\n",codificare1(a));
-    // printf("%d %s",nr_digits(15),itoa(15));
+    char *a = "c";
+    printf("%s\n",codificare2(a));
     return 0;
 }
